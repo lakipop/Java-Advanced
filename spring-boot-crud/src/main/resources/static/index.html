@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        /* Main styling with dark zinc (900) and dark green theme */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #18181b; /* Zinc 900 */
+            color: #f4f4f5; /* Zinc 100 */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Container styling */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: #27272a; /* Zinc 800 */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3f3f46; /* Zinc 700 */
+        }
+
+        /* Section styling */
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #3f3f46; /* Zinc 700 */
+            border-left: 4px solid #166534; /* Dark green */
+        }
+
+        /* Button styling */
+        button {
+            background-color: #166534; /* Dark green */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1a7c3d; /* Slightly lighter green */
+        }
+
+        /* Input styling */
+        input, select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #52525b; /* Zinc 600 */
+            background-color: #3f3f46; /* Zinc 700 */
+            color: #f4f4f5; /* Zinc 100 */
+            margin: 5px;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #52525b; /* Zinc 600 */
+        }
+
+        th {
+            background-color: #166534; /* Dark green */
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #3f3f46; /* Zinc 700 */
+        }
+
+        /* Heading styling */
+        h1, h2, h3 {
+            color: #f4f4f5; /* Zinc 100 */
+        }
+
+        h1 {
+            border-bottom: 2px solid #166534; /* Dark green */
+            padding-bottom: 10px;
+        }
+
+        /* Utility classes */
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gap {
+            gap: 10px;
+        }
+
+        .mt {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>User Management System</h1>
+
+    <!--
+        SECTION 1: GET ALL USERS
+        Corresponds to:
+        - /api/allusers (returns List<User>)
+        - /api/alluserDTO (returns List<userDTO>)
+        - /api/allusers2 (returns List<userDTO>)
+    -->
+    <div class="section">
+        <h2>Get All Users</h2>
+        <div class="flex-row gap">
+            <button onclick="fetchAllUsers()">Get All Users (User Model)</button>
+            <button onclick="fetchAllUserDTOs()">Get All Users (DTO)</button>
+            <button onclick="fetchAllUsers2()">Get All Users (Alternative DTO)</button>
+        </div>
+
+        <div id="allUsersResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!--
+        SECTION 2: GET USER BY ID
+        Corresponds to: /api/findbyid/{id}
+    -->
+    <div class="section">
+        <h2>Find User by ID</h2>
+        <div class="flex-row gap">
+            <input type="number" id="userIdInput" placeholder="Enter user ID">
+            <button onclick="fetchUserById()">Find User</button>
+        </div>
+
+        <div id="userByIdResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!--
+        SECTION 3: ADD NEW USER
+        Corresponds to: /api/adduser (POST)
+    -->
+    <div class="section">
+        <h2>Add New User</h2>
+        <div class="flex-col gap">
+            <input type="text" id="addUserName" placeholder="Name">
+            <input type="email" id="addUserEmail" placeholder="Email">
+            <input type="text" id="addUserOtherField" placeholder="Other Field">
+            <button onclick="addNewUser()">Add User</button>
+        </div>
+
+        <div id="addUserResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!--
+        SECTION 4: UPDATE USER
+        Corresponds to: /api/updateuser/{id} (PUT)
+    -->
+    <div class="section">
+        <h2>Update User</h2>
+        <div class="flex-col gap">
+            <input type="number" id="updateUserId" placeholder="User ID to update">
+            <input type="text" id="updateUserName" placeholder="New Name">
+            <input type="email" id="updateUserEmail" placeholder="New Email">
+            <input type="text" id="updateUserOtherField" placeholder="New Other Field">
+            <button onclick="updateUser()">Update User</button>
+        </div>
+
+        <div id="updateUserResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!--
+        SECTION 5: DELETE USER
+        Corresponds to: /api/removeuser/{id} (DELETE)
+    -->
+    <div class="section">
+        <h2>Delete User</h2>
+        <div class="flex-row gap">
+            <input type="number" id="deleteUserId" placeholder="Enter user ID to delete">
+            <button onclick="deleteUser()">Delete User</button>
+        </div>
+
+        <div id="deleteUserResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!--
+        SECTION 6: GET USER BY NAME
+        Corresponds to: /api/getbyname/name (GET with request param)
+    -->
+    <div class="section">
+        <h2>Find User by Name</h2>
+        <div class="flex-row gap">
+            <input type="text" id="userNameInput" placeholder="Enter user name">
+            <button onclick="fetchUserByName()">Find by Name</button>
+        </div>
+
+        <div id="userByNameResult" class="mt">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Base URL for API endpoints
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    /**
+     * SECTION 1: Functions for getting all users
+     */
+    async function fetchAllUsers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/allusers`);
+            const data = await response.json();
+            displayResults(data, 'allUsersResult', 'All Users (User Model)');
+        } catch (error) {
+            document.getElementById('allUsersResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    async function fetchAllUserDTOs() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/alluserDTO`);
+            const data = await response.json();
+            displayResults(data, 'allUsersResult', 'All Users (DTO)');
+        } catch (error) {
+            document.getElementById('allUsersResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    async function fetchAllUsers2() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/allusers2`);
+            const data = await response.json();
+            displayResults(data, 'allUsersResult', 'All Users (Alternative DTO)');
+        } catch (error) {
+            document.getElementById('allUsersResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * SECTION 2: Function for getting user by ID
+     */
+    async function fetchUserById() {
+        const userId = document.getElementById('userIdInput').value;
+        if (!userId) {
+            alert('Please enter a user ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/findbyid/${userId}`);
+            if (response.status === 404) {
+                document.getElementById('userByIdResult').innerHTML =
+                    `<p>User with ID ${userId} not found</p>`;
+                return;
+            }
+            const data = await response.json();
+            displayResults([data], 'userByIdResult', `User with ID ${userId}`);
+        } catch (error) {
+            document.getElementById('userByIdResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * SECTION 3: Function for adding a new user
+     */
+    async function addNewUser() {
+        const name = document.getElementById('addUserName').value;
+        const email = document.getElementById('addUserEmail').value;
+        const otherField = document.getElementById('addUserOtherField').value;
+
+        if (!name || !email) {
+            alert('Name and email are required');
+            return;
+        }
+
+        const user = {
+            name: name,
+            email: email,
+            // Add other fields as needed based on your User model
+            otherField: otherField
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/adduser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            const data = await response.json();
+            displayResults([data], 'addUserResult', 'Added User');
+        } catch (error) {
+            document.getElementById('addUserResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * SECTION 4: Function for updating a user
+     */
+    async function updateUser() {
+        const userId = document.getElementById('updateUserId').value;
+        const name = document.getElementById('updateUserName').value;
+        const email = document.getElementById('updateUserEmail').value;
+        const otherField = document.getElementById('updateUserOtherField').value;
+
+        if (!userId) {
+            alert('User ID is required');
+            return;
+        }
+
+        const user = {
+            name: name,
+            email: email,
+            // Add other fields as needed based on your User model
+            otherField: otherField
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/updateuser/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            const data = await response.json();
+            displayResults([data], 'updateUserResult', `Updated User with ID ${userId}`);
+        } catch (error) {
+            document.getElementById('updateUserResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * SECTION 5: Function for deleting a user
+     */
+    async function deleteUser() {
+        const userId = document.getElementById('deleteUserId').value;
+        if (!userId) {
+            alert('Please enter a user ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/removeuser/${userId}`, {
+                method: 'DELETE'
+            });
+            const message = await response.text();
+            document.getElementById('deleteUserResult').innerHTML =
+                `<p>${message}</p>`;
+        } catch (error) {
+            document.getElementById('deleteUserResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * SECTION 6: Function for getting user by name
+     */
+    async function fetchUserByName() {
+        const userName = document.getElementById('userNameInput').value;
+        if (!userName) {
+            alert('Please enter a user name');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/getbyname/name?name=${encodeURIComponent(userName)}`);
+            if (response.status === 404) {
+                document.getElementById('userByNameResult').innerHTML =
+                    `<p>User with name "${userName}" not found</p>`;
+                return;
+            }
+            const data = await response.json();
+            displayResults([data], 'userByNameResult', `User with Name "${userName}"`);
+        } catch (error) {
+            document.getElementById('userByNameResult').innerHTML =
+                `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+        }
+    }
+
+    /**
+     * HELPER FUNCTION: Display results in a table format
+     */
+    function displayResults(data, elementId, title) {
+        if (!data || data.length === 0) {
+            document.getElementById(elementId).innerHTML = `<p>No results found</p>`;
+            return;
+        }
+
+        // Create table header
+        let tableHtml = `<h3>${title}</h3><table><tr>`;
+        for (const key in data[0]) {
+            tableHtml += `<th>${key}</th>`;
+        }
+        tableHtml += `</tr>`;
+
+        // Add table rows
+        data.forEach(item => {
+            tableHtml += `<tr>`;
+            for (const key in item) {
+                tableHtml += `<td>${item[key]}</td>`;
+            }
+            tableHtml += `</tr>`;
+        });
+
+        tableHtml += `</table>`;
+        document.getElementById(elementId).innerHTML = tableHtml;
+    }
+</script>
+</body>
+</html>
